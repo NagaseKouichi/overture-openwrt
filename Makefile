@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=overture
-PKG_VERSION:=1.7-rc2
+PKG_VERSION:=1.7
 PKG_RELEASE:=1
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.md
@@ -9,7 +9,7 @@ PKG_LICENSE_FILES:=LICENSE.md
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 #PKG_SOURCE_URL:=https://github.com/shawn1m/overture/archive/v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/shawn1m/overture/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=19dc94fbddcbbe1c580bf7af6d0f385b9d9576ecd8cbadee0c726f630e34e08e
+PKG_HASH:=d3912fe53d2f6a60d20767a8dc5041333f8b5386b7d23d959b4de872d12b5024
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
@@ -42,6 +42,8 @@ define Package/overture/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/sbin/overture
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/overture.init $(1)/etc/init.d/overture
+	$(INSTALL_DIR) $(1)/etc/overture
+	$(INSTALL_BIN) ./files/overture_update_ipnetwork_file.sh $(1)/etc/overture/overture_update_ipnetwork_file.sh
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./files/overture.config $(1)/etc/config/overture
 	$(INSTALL_DIR) $(1)/etc/overture

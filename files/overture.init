@@ -4,9 +4,11 @@ USE_PROCD=1
 
 START=99
 
+CRON_FILE=/etc/crontabs/root
+
 add_dns_object() {
 	json_add_object
-	json_add_string Name $(config_get $1 Name)
+	json_add_string Name "$(config_get $1 Name)"
 	json_add_string Address $(config_get $1 Address)
 	json_add_string Protocol $(config_get $1 Protocol)
 	json_add_string SOCKS5Address $(config_get $1 SOCKS5Address)
@@ -44,7 +46,7 @@ generate_json() {
 	json_close_object
 	json_add_object HostsFile
 		json_add_string HostsFile $(config_get $1 HostsFile)
-		json_add_string HostsFileFinder $(config_get $1 HostsFile)
+		json_add_string Finder $(config_get $1 HostsFileFinder)
 	json_close_object
 	json_add_int MinimumTTL $(config_get $1 MinimumTTL)
 	json_add_string DomainTTLFile $(config_get $1 DomainTTLFile)
@@ -62,8 +64,24 @@ overture_parameters() {
 	[ "$(config_get $1 CoreNumber)" != "" ] && echo -p $(config_get $1 CoreNumber)
 }
 
+add_cron() {
+	local enable
+	local auto_update_ipnetwork
+	config_get_bool enable $1 Enable
+	config_get_bool auto_update_ipnetwork $1 AutoUpdateIPNetworkFilePrimary
+	touch $CRON_FILE
+	sed -i '/overture_update_ipnetwork_file/d' $CRON_FILE
+	([ "$enable" = 1 ] && [ "$auto_update_ipnetwork" = 1 ]) && echo "0 5 * * 6 /etc/overture/overture_update_ipnetwork_file.sh >>/tmp/overture_update.log 2>&1" >>$CRON_FILE
+	crontab $CRON_FILE
+}
+
+del_cron() {
+	sed -i '/overture_update_ipnetwork_file/d' $CRON_FILE
+	/etc/init.d/cron restart
+}
+
 overture_start() {
-	[ "$(config_get $1 Disabled)" == "1" ] && return
+	[ "$(config_get $1 Enable)" == "1" ] || return
 
 	local json_file
 
@@ -88,9 +106,11 @@ overture_start() {
 start_service() {
 	mkdir /var/run/overture
 	config_load overture
+	config_foreach add_cron overture
 	config_foreach overture_start overture
 }
 
 stop_service() {
 	rm -r /var/run/overture
+	del_cron
 }
