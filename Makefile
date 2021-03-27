@@ -16,6 +16,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/shawn1m/overture
+GO_PKG_BUILD_PKG:=$(GO_PKG)/main
 GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION)
 
@@ -28,18 +29,22 @@ define Package/overture
   SUBMENU:=IP Addresses and Names
   TITLE:=A customized DNS forwarder written in Go
   URL:=https://github.com/shawn1m/overture
+  DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
 define Package/overture/description
   Overture is a DNS server/forwarder/dispatcher written in Go.
-  Overture means an orchestral piece at the beginning of a classical music composition, just like DNS which is nearly the first step of surfing the Internet.
+endef
+
+define Package/overture/conffiles
+/etc/overture/
 endef
 
 define Package/overture/install
 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
 
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/sbin/overture
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/main $(1)/usr/sbin/overture
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/overture.init $(1)/etc/init.d/overture
 	$(INSTALL_DIR) $(1)/etc/overture
