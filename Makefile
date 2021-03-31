@@ -7,7 +7,6 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.md
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-#PKG_SOURCE_URL:=https://github.com/shawn1m/overture/archive/v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/shawn1m/overture/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=d3912fe53d2f6a60d20767a8dc5041333f8b5386b7d23d959b4de872d12b5024
 
@@ -17,7 +16,6 @@ PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/shawn1m/overture
 GO_PKG_BUILD_PKG:=$(GO_PKG)/main
-GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
