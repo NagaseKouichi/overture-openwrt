@@ -7,7 +7,7 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.md
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/shawn1m/overture/tar.gz/v$(PKG_VERSION)?
+PKG_SOURCE_URL:=https://codeload.github.com/shawn1m/overture/tar.gz/v${PKG_VERSION}?
 PKG_HASH:=d3912fe53d2f6a60d20767a8dc5041333f8b5386b7d23d959b4de872d12b5024
 
 PKG_BUILD_DEPENDS:=golang/host
@@ -15,6 +15,7 @@ PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 GO_PKG:=github.com/shawn1m/overture
+GO_PKG_LDFLAGS:=-s -w
 GO_PKG_BUILD_PKG:=$(GO_PKG)/main
 GO_PKG_LDFLAGS_X:=main.version=$(PKG_VERSION)
 
@@ -43,6 +44,9 @@ define Package/overture/install
 
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/main $(1)/usr/sbin/overture
+
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(1)/usr/sbin/overture || true
+
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/overture.init $(1)/etc/init.d/overture
 	$(INSTALL_DIR) $(1)/etc/overture
